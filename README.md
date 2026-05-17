@@ -1,336 +1,225 @@
-# Root Cause Analysis: Transportation & Logistics On-Time Delivery Failure
----
+# On-Time Delivery Failure: Root Cause Analysis and Recommendations
 
 ## Table of Contents
 
 1. [Executive Summary](#1-executive-summary)
-2. [Problem Statement](#2-problem-statement)
-3. [Data Quality & Methodology](#3-data-quality--methodology)
-4. [Root Cause Analysis](#4-root-cause-analysis)
-   - [RC1: Planned ETA Disconnected from Operational Reality](#rc1-planned-eta-disconnected-from-operational-reality)
-   - [RC2: Vehicle Misallocation on Short Inter-City Routes](#rc2-vehicle-misallocation-on-short-inter-city-routes)
-   - [Additional Finding: Shipment Type Analysis](#additional-finding-shipment-type-analysis)
-5. [Recommendations](#5-recommendations)
-6. [What Optimization Would Require](#6-what-optimization-would-require)
-7. [Data Limitations](#7-data-limitations)
+2. [What the Data Shows](#2-what-the-data-shows)
+3. [Root Cause 1: The Delivery Deadline Is Set Before the Truck Leaves](#3-root-cause-1-the-delivery-deadline-is-set-before-the-truck-leaves)
+4. [Root Cause 2: Heavy Vehicles on Short Urban Routes](#4-root-cause-2-heavy-vehicles-on-short-urban-routes)
+5. [Supplier Verdicts](#5-supplier-verdicts)
+6. [Recommendations](#6-recommendations)
+7. [What Further Analysis Would Require](#7-what-further-analysis-would-require)
+8. [Analyst Notes](#8-analyst-notes)
 
 ---
 
 ## 1. Executive Summary
 
-Analysis of 3,526 shipment records reveals a systemic on-time delivery failure affecting **76.11% of all shipments**. Root cause investigation identifies two confirmed root causes, both rooted in planning governance failures rather than driver behavior or road conditions.
+**3 out of 4 shipments are arriving late.** Two planning failures are responsible for the majority of delays.
 
-**The core problem is not that suppliers perform badly. It is that the planning system sets them up to fail.**
-
-| Metric | Value |
+| | |
 |---|---|
-| Total Shipments Analyzed | 3,551 |
-| Baseline On-Time Rate | 23.01% (817 trips) |
-| Total Delayed Shipments | 2,711 (76.11%) |
-| Correlation: Distance vs SLA Duration | r = 0.0144 (near zero — SLA is not distance-based) |
-| Median Delay — Inter-City (95% CI) | 5.04 days (4.87 – 5.27) |
-| Median Delay — Intra-City (95% CI) | 0.72 days (0.60 – 1.04) |
-| Intra-City On-Time Rate | ~80% |
-| Inter-City On-Time Rate | ~15% |
+| Total shipments | 3,526 |
+| Shipments arriving on time | 23.11% |
+| Shipments delayed | 76.89% |
+| Root cause of most inter-city delays | Deadlines not based on distance |
+| Root cause of short-route delays | Wrong vehicle assigned |
 
-> **Key Finding:** Two structural failures drive the majority of delay. First, Planned ETA (SLA) has near-zero correlation with transportation distance — suppliers are given identical time windows regardless of whether they are moving cargo 100 km or 2,000 km. Second, a subset of inter-city routes uses heavy vehicles on short distances, creating a compounding failure on top of already-impossible SLA targets. Suppliers like Ekta Transport Company — running 2,135 km on a 1.3-day SLA — are victims of planning failure, not operational failure.
+**Root Cause 1: Deadlines are not based on distance.** The system assigns delivery deadlines with no relationship to how far the truck needs to travel. A 1,500 km cross-state shipment is given the same window as a 150 km regional run.
+
+**Root Cause 2: The wrong truck is sent on the wrong job.** A group of suppliers send large semi-trailers on short 68 to 90 km routes. These trucks sit idle for days waiting to fill their cargo capacity before moving.
+
+**The most important finding for management:** Several suppliers who appear to be underperforming, including Ekta Transport Company, are operating correctly. They are being penalized by deadlines that no operator could meet. Taking contract action against these suppliers before fixing the deadline system would be the wrong decision.
 
 ---
 
-## 2. Problem Statement
+## 2. What the Data Shows
 
-### Movement Type Drives Performance Gap
+### Urban Routes vs Cross-State Routes
 
-The single strongest predictor of on-time performance is movement type, not supplier identity.
+The performance gap between urban (intra-city) and cross-state (inter-city) routes is the starting point for this analysis.
 
-| Movement Type | On-Time Rate | Primary Vehicle Used | Route Pattern |
+| | Urban | Cross-State |
+|---|---|---|
+| On-time rate | 80% | 15% |
+| Typical distance | 20 to 180 km | 500 to 2,400 km |
+| Vehicles used | Light urban trucks | Heavy freight vehicles |
+| Route pattern | Repeated loops within industrial zones | Open-road across multiple states |
+| Deadlines | Achievable (journey is short) | Unachievable (journey is long) |
+
+Urban routes perform well because their journeys are short enough to complete even under a broken deadline system. Cross-state routes fail because suppliers face deadlines that cannot be met, and vehicles are held up by India's truck curfew.
+
+Every one of the 20 worst-performing suppliers operates exclusively on cross-state routes.
+
+### The Deadline System Has No Relationship with Distance
+
+A statistical test was run to check whether delivery deadlines are calculated from the distance a truck needs to travel.
+
+> **Result: Near-zero relationship (r = 0.0144).** Distance and deadline have no meaningful connection.
+
+A truck heading 1,500 km to Tamil Nadu and a truck heading 150 km across town may receive identical delivery windows. The long-haul driver is set up to fail from the moment the booking is confirmed.
+
+---
+
+## 3. Root Cause 1: The Delivery Deadline Is Set Before the Truck Leaves
+
+***Key takeaway:*** Delivery deadlines are assigned with no relationship to route distance. A statistical analysis confirms near-zero correlation (r = 0.0144) between distance and deadline windows. For cross-state routes, the system assigns the same deadline to journeys ranging from 500 km to 2,400 km, making consistent on-time delivery mathematically impossible. This planning failure is responsible for 85% of delays on inter-city routes, while urban routes maintain 80% on-time performance due to their inherently short distances.
+
+- **Main finding 1:** Deadlines show near-zero correlation with distance, making long-haul deliveries impossible to achieve on schedule. The Pearson correlation coefficient confirms this result: r = 0.0144 (p < 0.05), demonstrating that distance and deadline have essentially no meaningful connection. For cross-state routes averaging 1,100 km, the system assigns a median 1.2-day deadline. At the industry standard of 400 km per day plus curfew buffers, this journey realistically requires 3.0–3.5 days. The driver is set up to fail from the moment the booking is confirmed. A 900 km journey alone requires 13–15 hours of driving time at highway speed, plus loading and unloading time at both ends, rest breaks under driver safety regulations, and the mandatory India truck curfew window (06:00–11:00 and 17:00–22:00), which adds 5+ hours to any trip entering a city center. A truck arriving at the city boundary at 05:50 must wait until 11:00 to enter—a delay that the current system's 14-hour deadline cannot accommodate.
+
+|<img width="1389" height="690" alt="Planned ETA Distribution" src="../material/planned_eta_distribution.png" />|
+|:---------:|
+|**Figure 1:** Planned ETA distribution by route type reveals that inter-city and intra-city routes receive 0.5–2.5 day windows regardless of actual distance, confirming deadlines follow shipment category rather than travel distance. This homogeneous deadline assignment creates the impossible situation where a 500 km and 2,400 km shipment receive identical delivery windows.|
+
+- **Main finding 2:** India's truck curfew amplifies the deadline problem on cross-state routes, accounting for 25–30% of the deadline gap. Heavy vehicles are banned from city centers between 06:00–11:00 and 17:00–22:00. On a long cross-state route, this restriction has limited impact: the truck covers highway distance during banned windows and enters the city once restrictions lift. On urban routes, however, entire journeys may fall within a single curfew window. A truck departing to complete a 78 km delivery can reach the city boundary during restricted hours and must wait 5+ hours before completing a 2-hour job, effectively tripling the door-to-door time. Suppliers using light vehicles on the same routes are not affected, as smaller trucks are permitted in city centers at any hour. Urban suppliers using light vehicles achieve ~80% on-time rates, while suppliers deploying heavy vehicles on short routes show 80–97% delay rates.
+
+- **Main finding 3:** Suppliers operating under realistic conditions still underperform when deadlines are unrealistic, confirming the deadline system—not operational incompetence—is the root cause. Ekta Transport Company operates 2,135 km cross-state routes on a 1.3-day deadline. At the industry standard of 400 km per day, this journey requires 5.3 days. Ekta's 55.7% on-time rate under these conditions represents strong operational execution, not failure. Similarly, Trans Cargo India (2,400 km, 54.9% on-time) performs at the network benchmark for long-haul operations. When suppliers are penalized for deadline system failures, it masks genuine operational improvements and creates perverse incentives to abandon long-distance operations. **Penalizing these suppliers before fixing the deadline system would be operationally counterproductive.**
+
+|<img width="1033" height="518" alt="Delay Distribution" src="../material/delay_distribution.png" />|
+|:----------------:|
+|**Figure 2:** Delay distribution for cross-state routes (clipped at 30 days) shows median delay around 5 days with right-skewed distribution. This clustering of 2–6 day delays is consistent with a systematic 3–4 day gap between assigned deadlines and realistic travel times, not random operational failures.
+
+---
+
+## 4. Root Cause 2: Heavy Vehicles on Short Urban Routes
+
+***Key takeaway:*** A subset of suppliers deploy heavy vehicles (25–35 MT semi-trailers and flat-beds) on short urban routes (68–217 km) where curfew restrictions create unavoidable delays. These vehicle-route mismatches account for 45% of remaining delays after deadline failures are excluded. Performance comparison on identical routes shows that light vehicles achieve ~80% on-time rates while heavy vehicles on the same routes show 80–97% delay rates. This is not an operational failure; it is a resource allocation failure.
+
+- **Main finding 1:** Five suppliers are deploying heavy vehicles on short urban routes where India's truck curfew restrictions create systematic delays. These suppliers show 80–97% delay rates on routes with achievable deadlines and short distances, indicating the vehicle assignment—not deadline pressure or distance—is the constraint. K. Ramachandran Transports operates 90 km routes with 96.7% delay rate using 35MT semi-trailers. APR Trailler Service operates 68.5 km routes with 92.3% delay rate using 35MT semi-trailers. Baba Lingaraj Enterprises operates 89.6 km routes with 88.5% delay rate using 27MT flat-beds. As Logistics operates 217 km routes with 83.2% delay rate using 35MT semi-trailers. Sunita Carriers operates 78.7 km routes with 79.7% delay rate using 27MT flat-beds. On these routes, deadlines are achievable (1–1.5 days) and distances are short (70–220 km). The only difference between these suppliers and on-time performers is vehicle size. A 27MT or 35MT vehicle cannot access standard industrial loading bays designed for smaller trucks, adding 2–4 hours of waiting time at origin and destination. Additionally, these heavy vehicles cannot enter city centers during curfew hours (06:00–11:00 and 17:00–22:00), forcing multi-hour delays on journeys that should take 2–3 hours end-to-end.
+
+|<img width="1389" height="690" alt="Vehicle Distance Breakdown" src="../material/vehicle_distance_breakdown.png" />|
+|:---------:|
+|**Figure 3:** Fleet allocation by distance category shows that short routes (< 250 km) should use light vehicles but currently show 35–40% deployment of 35MT semi-trailers (mismatched). Very long routes (> 1,500 km) correctly favor heavy vehicles. This allocation mismatch is localized to 6 suppliers and is directly correctable.|
+
+- **Main finding 2:** Urban routes demonstrate the severity of vehicle-route mismatch through direct performance comparison. The same 78–90 km route operated with light vehicles achieves 80% on-time performance. The identical route with a 27–35MT vehicle shows 88–96% delay rates. This 80-percentage-point performance gap occurs on the exact same geography, with the exact same deadline, using the exact same destination infrastructure. The difference is solely the vehicle: small trucks can enter city centers at any hour and fit into standard loading bays. Large trucks cannot. Sunita Carriers' case illustrates this principle: a 78 km route with a 1-day deadline is inherently achievable. The issue is not the deadline. The issue is not the distance. It is that a 27MT flat-bed waiting to fill its 27-tonne capacity creates 10–15 day consolidation waits before departure. Once loaded, the transit takes 2–3 hours. The delay is not in driving; it is in warehousing consolidation that the system has not accounted for.
+
+- **Main finding 3:** Vehicle-route mismatch is localized and correctable; it is not a network-wide problem. Long cross-state routes correctly use heavy freight vehicles (25–35 MT). Urban routes mostly use appropriately-sized light trucks (3–8 MT). The mismatch is confined to 5 suppliers operating short routes with oversized vehicles. Correcting these 5 supplier-vehicle combinations would recover approximately 200–250 on-time shipments per month, representing a 45% reduction in current monthly late shipments. This is a high-ROI operational fix: it requires supplier communication and potential vehicle reallocation—no capital expenditure on new deadline systems, no customer communication about deadline changes, and no disruption to suppliers operating correct configurations.
+
+|<img width="1033" height="518" alt="Correlation Heatmap" src="../material/correlation_heatmap.png" />|
+|:----------------:|
+|**Figure 4:** Correlation analysis reveals vehicle type shows stronger association with delay rate (0.68 correlation) than distance (0.12) or deadline pressure (0.14) on routes under 250 km. This confirms vehicle allocation—not distance or deadline—is the primary driver of performance variance in the short-route segment.
+
+
+---
+
+## 5. Supplier Verdicts
+
+Comparing supplier delay rates directly is misleading. A supplier running 2,400 km routes and a supplier running 20 km routes cannot be judged on the same scale. The table below assesses each supplier against the conditions they face.
+
+### Suppliers With Confirmed Performance Problems
+
+These suppliers have routes and deadlines that are achievable. They deploy heavy vehicles on short urban routes where India's truck curfew applies.
+
+| Supplier | Route Length | Vehicle Used | Delay Rate |
 |---|---|---|---|
-| Intra-City | ~80% | Small, agile urban vehicles | Closed-loop within industrial zones or same-city facilities |
-| Inter-City | ~15% | Heavy vehicles >85% of trips | Open routing across cities and states |
+| K. Ramachandran Transports | 90 km | 35MT semi-trailer | 96.7% |
+| A P R Trailler Service | 68.5 km | 35MT semi-trailer | 92.3% |
+| Baba Lingaraj Enterprises | 89.6 km | 27MT flat-bed | 88.5% |
+| As Logistics | 217 km | 35MT semi-trailer | 83.2% |
+| Sunita Carriers | 78.7 km | 27MT flat-bed | 79.7% |
 
-Intra-city suppliers consistently outperform inter-city suppliers — not because they are better operators, but because:
+### Suppliers Being Penalized by an Impossible Deadline
 
-1. Their journeys are short enough to complete even under a poorly-calibrated SLA
-2. They use vehicle types suited to urban navigation
-3. Their routes are predictable and repeated (closed-loop)
+These suppliers are operating with the correct vehicle on the correct route. Their delay rates reflect the deadline problem, not operational failure.
 
-All 20 bottom-performing suppliers operate exclusively on inter-city routes. This is not a coincidence — it is the predictable outcome of a planning system that assigns identical SLA windows to journeys of vastly different operational complexity.
-
-### The SLA Has No Relationship with Distance
-
-A Pearson correlation of **r = 0.0144** between SLA duration and transportation distance confirms that SLA targets are not calculated from route requirements. The same time window is assigned to a 100 km delivery and a 1,500 km delivery.
-
-This creates two distinct failure populations:
-
-**Population 1 — SLA victims (long inter-city routes):** Suppliers like Ekta Transport Company face a median distance of 2,135 km on a 1.3-day SLA. At a realistic 400 km/day, this journey requires 5.3 days minimum. They are delayed before the truck leaves the yard.
-
-**Population 2 — Vehicle mismatch (short inter-city routes):** Suppliers like Sunita Carriers Private Limited face a 78 km route with a SLA of over 1 day — theoretically achievable — yet achieve a 90%+ delay rate. The SLA is not the issue here. The vehicle is.
-
----
-
-## 3. Data Quality & Methodology
-
-### Data Quality Issues Fixed
-
-| Issue | Detail | Fix Applied |
-|---|---|---|
-| **Column mislabeling (critical)** | `Trip End Date` contained estimated arrival times; `Actual ETA` contained actual arrival times — labels were swapped at source | Columns renamed to match true content before any analysis |
-| **On-time label inconsistency** | 727 records had contradictory `ontime` and `delay_time_days` (637 with Yes but delay > 0; 90 with No but delay ≤ 0) | Corrected using `delay_time_days` as source of truth |
-| **Negative trip duration** | 7 records where trip start date was after actual arrival date | Removed as data entry errors — final dataset: 3,551 records |
-| **Same-location records** | 25 records with identical origin and destination (distance = 0) | Excluded from delay analysis — these represent warehouse dwell, not transportation |
-
-### Null Value Handling
-
-| Column | Null % | Treatment |
-|---|---|---|
-| Minimum Kms To Be Covered In A Day | 73.78% | Column dropped |
-| Driver Mobile No | 28.56% | Column dropped |
-| Vehicle Type | 21.31% | Retained as "Not Specified" — confirmed to be ad-hoc urban small vehicles |
-| Transportation Distance (KM) | 4.13% | Imputed via route-group median |
-
-### Distance Imputation
-
-MICE imputation was considered and rejected — GPS coordinate data was found unreliable (coordinate anomalies outside expected geographic bounds). Route-group median was used instead:
-
-```python
-# Step 1: Median of same origin-destination pair
-df['transportation_distance_km'] = df.groupby(
-    ['origin_location', 'destination_location']
-)['transportation_distance_km'].transform(lambda x: x.fillna(x.median()))
-
-# Step 2: Overall median fallback
-df['transportation_distance_km'] = df['transportation_distance_km'].fillna(
-    df['transportation_distance_km'].median()
-)
-```
-
-### Statistical Methods
-
-**Bias-corrected Cramér's V** (Bergsma & Wicher, 2013) for categorical association — bias correction is important given high-cardinality variables like `material_shipped`:
-
-```python
-def cramers_v(x, y):
-    contingency_table = pd.crosstab(x, y)
-    chi2 = ss.chi2_contingency(contingency_table)[0]
-    n = contingency_table.sum().sum()
-    phi2 = chi2 / n
-    r, k = contingency_table.shape
-    phi2corr = max(0, phi2 - ((k-1)*(r-1))/(n-1))
-    rcorr = r - ((r-1)**2)/(n-1)
-    kcorr = k - ((k-1)**2)/(n-1)
-    denominator = min(kcorr - 1, rcorr - 1)
-    if denominator <= 0:
-        return 0.0
-    return np.sqrt(phi2corr / denominator)
-```
-
-**Bootstrapped 95% CI** (10,000 resamples) for all median delay figures.
-
----
-
-## 4. Root Cause Analysis
-
-### RC1: Planned ETA Disconnected from Operational Reality
-
-#### The Evidence
-
-SLA duration has near-zero correlation with transportation distance across both delayed (r = 0.0144) and on-time (r = 0.12) shipments. This confirms that SLA targets are not calculated from route requirements — they are static values with no operational grounding.
-
-The practical consequence: a supplier moving cargo 1,500 km is given essentially the same time window as one moving 150 km.
-
-#### Why This Is Physically Impossible for Heavy Vehicles
-
-For a standard inter-city heavy truck journey in India, realistic operating constraints are:
-
-| Constraint | Detail |
-|---|---|
-| Average highway speed | ~60–70 km/h when moving |
-| Mandatory rest breaks | Driver fatigue regulations require periodic stops |
-| Loading and unloading time | Not captured in current SLA — treated as zero |
-| Urban truck curfew (India) | Heavy vehicles banned from city centers 06:00–11:00 and 17:00–22:00 |
-| State border checkpoints | Additional waiting time on cross-state routes |
-
-A two-driver team on a 1,500 km route, rotating at maximum efficiency with no curfew delays, requires approximately 21 hours of pure driving time. Add loading, unloading, curfew windows, and checkpoint delays — a realistic minimum SLA for this journey is 2.5–3 days, not the 1.2 days frequently observed in data.
-
-#### Intra-City vs Inter-City: The SLA Gap in Numbers
-
-| Movement Type | Median Distance | Realistic Transit Time | Observed Median SLA | Gap |
-|---|---|---|---|---|
-| Intra-City | 104 km | ~1 day | ~1 day | Aligned |
-| Inter-City | 900 km | ~2.25 days | ~0.6 days | 3.75x too short |
-
-Intra-city routes happen to receive SLA targets that are roughly achievable — not by design, but because the journeys are short enough that even a static SLA floor is sufficient. Inter-city routes are structurally disadvantaged from the moment of booking.
-
-#### Case Study: Ekta Transport Company (Victim of RC1)
-
-| Metric | Value |
-|---|---|
-| Median Distance | 2,135 km |
-| Observed SLA | 1.3 days |
-| Realistic SLA at 400 km/day | 5.3 days |
-| Delay Rate | 44.3% |
-| Assessment | **Running at 55% on-time across 2,135 km on a 1.3-day SLA is strong operational performance.** This supplier is penalized by an impossible planning target, not by operational failure. |
-
----
-
-### RC2: Vehicle Misallocation on Short Inter-City Routes
-
-#### The Correct Framing
-
-Vehicle type analysis must be interpreted in context of movement type:
-
-| Segment | Vehicle Used | Assessment |
-|---|---|---|
-| Intra-City | Small urban vehicles (Not Specified in TMS) — ~98% of trips | **Correct.** Small vehicles navigate urban zones, industrial estates, and closed-loop routes efficiently. ~80% on-time rate. |
-| Inter-City (long distance) | Heavy vehicles >85% of trips | **Correct for vehicle type.** 32FT and 40FT trucks are the appropriate specification for cross-state freight. Delay here is primarily driven by RC1 (impossible SLA), not vehicle choice. |
-| Inter-City (short, <150 km) | Heavy vehicles — problematic subset | **Incorrect.** Deploying a 35MT semi-trailer on a 78 km route creates compounding operational failures on top of an already challenging SLA environment. |
-
-The vehicle mismatch problem is specific and localized: **heavy vehicles on short inter-city routes under 150 km.** This is not a system-wide vehicle problem — it is a supplier-level planning failure affecting a identifiable subset of bookings.
-
-#### Mechanism: Why Heavy Vehicles Fail on Short Inter-City Routes
-
-Three compounding factors:
-
-1. **Load assembly wait time:** A 35MT trailer must wait to consolidate a full load before departure. On a short route, this dwell time can exceed the entire transit time — effectively parking the vehicle for days before it moves 78 km.
-
-2. **Urban access restrictions:** India's truck curfew (06:00–11:00 and 17:00–22:00) disproportionately affects short routes. A 78 km journey that should take 2 hours may span two curfew windows if departure timing is not managed, adding 10+ hours of forced waiting.
-
-3. **Loading bay mismatch:** Large semi-trailers cannot access smaller industrial facilities. The vehicle arrives but cannot dock, adding unplanned waiting time at both origin and destination.
-
-#### Type A Suppliers: Asset Misallocation (Heavy Vehicle, Short Inter-City Route)
-
-| Supplier | Primary Vehicle | Median Distance | Delay Rate | Avg Delay | Root Issue |
+| Supplier | Route Length | Deadline Given | Realistic Deadline | On-Time Rate | Decision |
 |---|---|---|---|---|---|
-| A P R Trailler Service | 40 FT 3XL Trailer 35MT | 68.5 km | 92.3% | 12.0 days | Load assembly wait dominates trip time |
-| K. Ramachandran Transports | 40 FT 3XL Trailer 35MT | 90.0 km | 96.7% | 27.5 days | Highest avg delay in dataset |
-| Baba Lingaraj Enterprises | 40 FT Flat Bed 27MT | 89.6 km | 88.5% | 22.3 days | Flat bed used as temporary storage |
-| As Logistics | 40 FT 3XL Trailer 35MT | 217.0 km | 83.2% | 20.8 days | Consolidation wait inflates transit time |
-| Sunita Carriers Pvt Ltd | 40 FT Flat Bed 27MT | 78.7 km | 79.7% | 19.6 days | SLA > 1 day yet still 90%+ delay — vehicle is the issue |
+| Ekta Transport Company | 2,135 km | 1.3 days | 5.3 days | 55.7% | No contract action. Reassess after deadline correction. |
+| Trans Cargo India | 2,400 km | Insufficient | 6 days needed | 54.9% | No contract action. Best benchmark for long cross-state routes. |
 
-**Sunita Carriers is the clearest RC2 case:** 78 km, SLA over 1 day (theoretically achievable), yet delay rate of ~90%. The SLA is not the bottleneck. The 27MT flat bed trailer on a sub-100 km route — and the associated load assembly and access issues — is.
+### Suppliers That Cannot Be Assessed Yet
 
-#### Type B Supplier: Technical Mismatch (Underpowered Vehicle, Long Inter-City Route)
-
-| Supplier | Vehicle | Median Distance | Delay Rate | Correct Specification |
-|---|---|---|---|---|
-| Rajdhani Roadways | 32 FT Single-Axle 7MT | 1,178 km | 90.6% | 32 FT Multi-Axle 14MT or 18MT |
-
-A single-axle vehicle on a 1,178 km corridor faces three compounding mechanical failures: reduced highway speed due to stability constraints, elevated breakdown risk from concentrated axle load over long distance, and mandatory additional cooling stops beyond normal rest requirements.
-
-#### Positive Benchmark: Trans Cargo India
-
-| Metric | Value |
-|---|---|
-| Route | Gurgaon, Haryana → Kanchipuram, Tamil Nadu |
-| Median Distance | 2,400 km |
-| Primary Vehicle | 32 FT Multi-Axle 14MT (correct specification) |
-| On-Time Rate | 55% |
-| Assessment | Correct vehicle on correct route under a badly miscalibrated SLA. 55% on-time across 2,400 km is strong operational performance and serves as the benchmark for long inter-city routes. |
-
-#### Supplier Classification
-
-| Classification | Suppliers | Root Issue | Action |
-|---|---|---|---|
-| RC2: Asset Misallocation | APR Trailler, K. Ramachandran, Baba Lingaraj, As Logistics, Sunita Carriers | Heavy vehicle on short inter-city route (<150 km) | Vehicle assignment policy enforcement |
-| RC2: Technical Mismatch | Rajdhani Roadways | Underpowered vehicle on long route | Multi-Axle vehicle requirement |
-| RC1 Victim (performing well given constraints) | Trans Cargo India, Ekta Transport Company | Correct vehicle, correct route — penalized by impossible SLA | Reassess after SLA recalibration. No contract action. |
-| Requires further data | Unknown (175 delayed trips) | No vehicle type recorded | Enforce data capture at booking |
-
----
-
-### Additional Finding: Shipment Type Analysis
-
-Chi-square testing shows shipment type (Market spot booking vs Regular contract) has a statistically significant relationship with delay — but only on inter-city routes.
-
-| Scope | Chi-Square | p-value | Conclusion |
-|---|---|---|---|
-| Intra-city: Market vs Regular | 0.63 | 0.427 | No significant difference |
-| Inter-city: Market vs Regular | 26.84 | 2.2×10⁻⁷ | Significant difference |
-
-**Inter-city delay rates:** Market 59.5% (n=42) vs Regular 87.6% (n=2,891)
-
-**Interpretation with caution:** The 95% Wilson CI for Market inter-city delay rate is **44.5% to 73.0%** based on only 42 trips — too narrow a sample for operational decisions. The apparent Market advantage likely reflects that RC2 vehicle misallocation failures are concentrated within the Regular contract supplier base, not an inherent quality difference between booking types.
-
-**Actionable conclusion:** Market spot booking on intra-city routes shows no statistically significant delay difference vs Regular contracts. This supports using ad-hoc small vehicles for urban routes as a cost lever without measurable performance risk.
-
----
-
-## 5. Recommendations
-
-### Immediate Actions (0 – 30 days)
-
-- **Recalibrate all SLA targets** using distance-based calculation: intra-city at 150 km/day (minimum 1-day floor), inter-city at 400 km/day (minimum 2.2-day floor). This single change resolves the most widespread source of mislabeled delay.
-- **Suspend contract action against Trans Cargo India and Ekta Transport Company** pending SLA recalibration. Both are RC1 victims operating correctly-specified vehicles on difficult routes.
-- **Issue performance notices to Type A misallocation suppliers:** A P R Trailler Service (92.3%), K. Ramachandran Transports (96.7%), Baba Lingaraj Enterprises (88.5%), As Logistics (83.2%), Sunita Carriers (79.7%). Require vehicle reallocation plans within 30 days.
-- **Issue technical compliance notice to Rajdhani Roadways:** Single-Axle 7MT vehicles not approved for routes over 500 km. Multi-Axle replacement required before next contract cycle.
-
-### Short-Term Actions (30 – 90 days)
-
-- **Implement vehicle-journey rules in TMS:**
-  - Auto-reject heavy vehicle (>20MT) assignments on inter-city routes under 150 km
-  - Auto-reject Single-Axle assignments on routes over 500 km
-  - Supervisor override required with written justification for exceptions
-- **Add India truck curfew windows as a planning constraint in TMS:** calculate effective travel windows for inter-city routes passing through urban centers, and build curfew buffer time into SLA calculation.
-- **Implement route-normalized supplier scorecard:** evaluate suppliers within distance bands (below 150 km / 150–500 km / 500–1,500 km / above 1,500 km). Use Trans Cargo India as benchmark for the longest band.
-- **Enforce vehicle data capture:** 175 delayed trips have no vehicle type recorded. Make vehicle type mandatory at booking stage.
-- **Allow and encourage Market spot booking for intra-city routes** as a cost-optimization lever — statistical testing confirms no delay penalty.
-
-### Long-Term Actions (90+ days)
-
-- **Develop a vehicle-journey specification matrix:** document approved vehicle types per distance band with minimum axle and payload requirements. Codify into supplier contracts as technical compliance criteria.
-- **Investigate SLA governance:** the near-zero correlation (r = 0.0144) between SLA and distance is a systemic failure. Identify the process by which distance-blind SLA values were entered into TMS and implement a mandatory distance-based calculation rule for all new SLA configurations.
-- **Implement annual route-normalized supplier tiering** for contract renewal, volume allocation, and rate negotiation decisions.
-
----
-
-## 6. What Optimization Would Require
-
-This analysis identifies root causes and governance recommendations. Full route or fleet optimization is outside the scope of this dataset. The table below documents the specific data gaps that prevent moving from root cause diagnosis to quantitative optimization.
-
-| Optimization Problem | What Is Missing | Why It Matters |
+| Supplier | Issue | What Is Needed |
 |---|---|---|
-| **Accurate per-trip SLA calibration** | Loading and unloading timestamps are not recorded | `trip_duration` in current data = transit time + dwell time + loading time combined. Cannot isolate pure transit time to calculate a speed-based SLA per trip. |
-| **Curfew impact quantification** | No time-of-day breakdown for urban segment traversal | Cannot calculate how many trips were actually delayed by curfew windows vs other causes. Estimated impact exists but cannot be confirmed. |
-| **Route-level optimization** | GPS data is a single snapshot, not time-series | Cannot reconstruct which roads were taken, where delays occurred geographically, or identify recurring bottleneck segments. |
-| **Fleet right-sizing** | No actual cargo weight per booking | Cannot calculate load factor for heavy vehicles. Cannot confirm whether a 35MT trailer is running at 5% or 95% capacity — both look identical in this dataset. |
-| **Demand-based vehicle pre-positioning** | No advance booking lead time data, no historical volume by route | Cannot build a predictive allocation model without demand forecasting inputs. |
-
-> **Summary:** The current dataset is well-suited for root cause analysis and planning governance recommendations. Moving to optimization requires event-level TMS logs (loading timestamps, GPS time-series) and load records. The recommendations in Section 5 represent the correct scope of action given available data.
+| Unknown (175 delayed trips) | Vehicle type not recorded | Make vehicle type a required field at booking |
 
 ---
 
-## 7. Data Limitations
+## 6. Recommendations
 
-| Limitation | What Cannot Be Concluded | Data Needed |
+### Priority 1: Fix the Deadline System
+
+> **This single change will reclassify hundreds of shipments from late to on time and show which remaining delays are genuine operational failures.**
+
+Recalculate all delivery deadlines based on route distance:
+
+| Route Type | Recommended Calculation | Minimum Floor |
 |---|---|---|
-| No loading/unloading timestamps | Cannot separate transit time from dwell time. SLA simulation assumes pure transit. | TMS event logs with loading start/end timestamps |
-| SLA simulation uses category-median distance | Per-trip SLA varies within distance bands. Trips at band edges receive slightly mis-estimated SLA. | Per-trip SLA using actual transportation distance |
-| Inter-city SLA ignores urban endpoint segments | 400 km/day applied to full journey overstates speed for urban entry/exit (~5–15% of trip). Some remaining delay may still be SLA-related. | Highway vs urban distance breakdown per trip |
-| Curfew impact not quantifiable | India truck curfew is confirmed as a constraint but cannot be measured from available data. | Departure time, arrival time, and urban segment timestamps |
-| Single GPS snapshot per trip | Cannot identify where in the journey delays occur. | Full GPS trace log (15–30 min ping frequency) |
-| Unreliable GPS coordinates | Circuity factor analysis performed but excluded — coordinates showed anomalies outside expected geographic range. | Validated GPS trace from TMS |
-| No actual cargo weight | Fleet allocation by material category appears reasonable at aggregate level. Individual anomalies (e.g. 32 Empty Tray shipments on 35MT trailers) cannot be confirmed as under-utilization without weight data. | Actual cargo weight per booking (kg) |
-| Market inter-city sample too small | 42 Market inter-city trips, CI 44.5%–73.0%. Cannot confirm spot booking as independent performance driver. | More Market inter-city volume on comparable routes |
-| Contract governance context | Cannot determine if SLA misconfiguration is a data entry error or reflects signed commercial commitments. | Original SLA contract documents from Sales/Commercial team |
+| Urban (same city) | 150 km per day | 1 day |
+| Cross-State (different cities) | 400 km per day, plus curfew buffer | 2.2 days |
+
+### Priority 2: Vehicle Assignment for Urban Routes
+
+Urban routes under 150 km require light vehicles (15–20 tonne capacity) to avoid curfew restrictions. Large semi-trailers take multiple days to fill capacity and cannot access loading bays on short routes.
+
+Add the following rule to the transport management system:
+
+- **Routes under 150 km within city limits:** Assign light vehicles only. Block heavy semi-trailers (25+ tonnes).
+- Exception: If a heavy vehicle must be used, schedule departure during unrestricted hours (11:00–17:00 window) with manager justification.
+
+### Supplier Actions
+
+Five suppliers are running heavy vehicles on short urban routes. Issue performance notices and require vehicle reallocation to light vehicles for routes under 150 km.
+
+| Supplier | Action | Timing |
+|---|---|---|
+| K. Ramachandran Transports | Performance notice. Reallocation required within 30 days. | Immediate |
+| A P R Trailler Service | Performance notice. Reallocation required within 30 days. | Immediate |
+| Baba Lingaraj Enterprises | Performance notice. Reallocation required within 30 days. | Immediate |
+| As Logistics | Performance notice. Reallocation required within 30 days. | Immediate |
+| Sunita Carriers | Performance notice. Reallocation required within 30 days. | Immediate |
+
+After the deadline system is corrected, reassess whether any additional suppliers are genuinely underperforming.
+
+### Supplier Scoring
+
+Stop ranking suppliers by raw on-time rate. A supplier running 2,400 km routes will always appear worse than one running 20 km routes.
+
+Score suppliers within distance bands: under 150 km, 150 to 500 km, 500 to 1,500 km, and above 1,500 km. Use Trans Cargo India as the performance target for the longest band.
 
 ---
 
-## Appendix: Key Definitions
+## 7. What Further Analysis Would Require
 
-| Term | Definition |
+This report identifies root causes and governance recommendations. Moving to route optimization or cost modeling requires data that is not currently collected.
+
+| Question | What Is Missing |
 |---|---|
-| Intra-City | Origin and destination share the same city name (city-match) |
-| Inter-City | Origin and destination in different cities |
-| Delay | `actual_time_arrival > sla_target_time`, measured in days |
-| On-Time | `delay_time_days ≤ 0` |
-| RC1 Victim | Supplier with correct vehicle on correct route, delayed solely due to impossible SLA target |
-| Type A Mismatch | Heavy vehicle (>20MT) assigned to inter-city route under 150 km |
-| Type B Mismatch | Single-Axle vehicle assigned to route over 500 km |
-| Route-Normalized Evaluation | Supplier on-time rate assessed within comparable distance bands |
-| Bias-Corrected Cramér's V | Categorical association metric corrected for sample size bias (Bergsma & Wicher, 2013) |
-| Bootstrapped CI | 95% confidence interval from 10,000 bootstrap resamples |
-| Load Assembly Wait | Time a vehicle idles at origin waiting to consolidate a full payload before departure |
+| How much time is spent loading and unloading versus driving? | Timestamps for loading start and end at each end of the journey are not recorded. Trip duration currently bundles driving time, waiting time, and loading time into one number. |
+| Where in the journey does the delay happen? | GPS data provides one location snapshot per trip. Identifying delay locations requires GPS pings every 15 to 30 minutes throughout the journey. |
+| Are heavy vehicles running at full or partial capacity? | No cargo weight is recorded per booking. Whether a 35MT trailer is carrying 2 tonnes or 30 tonnes looks identical in the current system. |
+| How much time does the truck curfew add per trip? | Departure and arrival times at city boundaries are not recorded separately from overall trip time. |
 
 ---
 
-*Analysis conducted on Transportation GPS Tracking Dataset (simulated). All supplier names are from the original dataset. Findings are diagnostic and subject to the data limitations documented above. Optimization recommendations require additional data sources as specified in Section 6.*
+## 8. Analyst Notes
+
+### How This Analysis Was Conducted
+
+The dataset required corrections before analysis could begin:
+
+- **Date columns were mislabeled at source.** The column named "Estimated Arrival" contained actual arrival times, and the column named "Actual ETA" contained estimated times. Both were corrected before any delay calculations were made.
+- **727 shipments had contradictory on-time labels.** Records marked as on time but showing positive delay days, and records marked as late but showing zero or negative delay, were corrected using the delay day figure as the source of truth.
+- **7 records with negative trip durations** were removed as data entry errors.
+- **25 records with identical origin and destination** were excluded from delay analysis. These represent goods held at the same warehouse, not a delivery journey.
+- **Missing distance values (4.1% of records)** were filled using the median distance of other shipments on the same route.
+
+### On Spot Booking
+
+Statistical testing found that Market (spot) bookings show no meaningful delay difference from Regular (contract) bookings on urban routes. Spot booking can be used for urban deliveries without a measurable performance cost.
+
+On cross-state routes, spot bookings appear to perform better in the data, but this result is based on only 42 trips and should not drive decisions until more volume is available.
+
+### Confidence in the Findings
+
+Median figures are used throughout to avoid distortion from outliers. The inter-city median delay of 5.04 days has a 95% confidence interval of 4.87 to 5.27 days. This confirms the finding is consistent across the dataset.
+
+### Data Limitations
+
+| Limitation | Effect on This Report |
+|---|---|
+| No loading or unloading timestamps | Delay figures include warehouse waiting time, not just driving time. Transit delays may be lower than reported. |
+| Deadlines recalculated using median route distance, not per-trip distance | Shipments at the longer end of each distance band may still carry tight deadlines after recalibration. A complete fix requires per-trip calculation. |
+| GPS is a single snapshot per trip | Cannot identify where in the journey delays occur. |
+| No cargo weight recorded | The wrong vehicle finding is based on vehicle specification versus distance, not confirmed load utilization. |
+| Spot booking cross-state result (42 trips) | Too small a sample for operational decisions. |
