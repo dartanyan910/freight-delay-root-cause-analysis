@@ -67,7 +67,7 @@ A truck heading 1,500 km to Tamil Nadu and a truck heading 150 km across town ma
 
 - **Main finding 1:** Deadlines show near-zero correlation with distance, making long-haul deliveries impossible to achieve on schedule. The Pearson correlation coefficient confirms this result: r = 0.0144 (p < 0.05), demonstrating that distance and deadline have essentially no meaningful connection. For cross-state routes averaging 1,100 km, the system assigns a median 1.2-day deadline. At the industry standard of 400 km per day plus curfew buffers, this journey realistically requires 3.0–3.5 days. The driver is set up to fail from the moment the booking is confirmed. A 900 km journey alone requires 13–15 hours of driving time at highway speed, plus loading and unloading time at both ends, rest breaks under driver safety regulations, and the mandatory India truck curfew window (06:00–11:00 and 17:00–22:00), which adds 5+ hours to any trip entering a city center. A truck arriving at the city boundary at 05:50 must wait until 11:00 to enter—a delay that the current system's 14-hour deadline cannot accommodate.
 
-|<img width="1389" height="690" alt="Planned ETA Distribution" src="../material/planned_eta_distribution.png" />|
+|<img src="material/planned_eta_distribution.png" alt="Planned ETA Distribution" width="100%">|
 |:---------:|
 |**Figure 1:** Planned ETA distribution by route type reveals that inter-city and intra-city routes receive 0.5–2.5 day windows regardless of actual distance, confirming deadlines follow shipment category rather than travel distance. This homogeneous deadline assignment creates the impossible situation where a 500 km and 2,400 km shipment receive identical delivery windows.|
 
@@ -75,7 +75,7 @@ A truck heading 1,500 km to Tamil Nadu and a truck heading 150 km across town ma
 
 - **Main finding 3:** Suppliers operating under realistic conditions still underperform when deadlines are unrealistic, confirming the deadline system—not operational incompetence—is the root cause. Ekta Transport Company operates 2,135 km cross-state routes on a 1.3-day deadline. At the industry standard of 400 km per day, this journey requires 5.3 days. Ekta's 55.7% on-time rate under these conditions represents strong operational execution, not failure. Similarly, Trans Cargo India (2,400 km, 54.9% on-time) performs at the network benchmark for long-haul operations. When suppliers are penalized for deadline system failures, it masks genuine operational improvements and creates perverse incentives to abandon long-distance operations. **Penalizing these suppliers before fixing the deadline system would be operationally counterproductive.**
 
-|<img width="1033" height="518" alt="Delay Distribution" src="../material/delay_distribution.png" />|
+|<img src="material/delay_distribution.png" alt="Delay Distribution" width="100%">|
 |:----------------:|
 |**Figure 2:** Delay distribution for cross-state routes (clipped at 30 days) shows median delay around 5 days with right-skewed distribution. This clustering of 2–6 day delays is consistent with a systematic 3–4 day gap between assigned deadlines and realistic travel times, not random operational failures.
 
@@ -87,7 +87,7 @@ A truck heading 1,500 km to Tamil Nadu and a truck heading 150 km across town ma
 
 - **Main finding 1:** Five suppliers are deploying heavy vehicles on short urban routes where India's truck curfew restrictions create systematic delays. These suppliers show 80–97% delay rates on routes with achievable deadlines and short distances, indicating the vehicle assignment—not deadline pressure or distance—is the constraint. K. Ramachandran Transports operates 90 km routes with 96.7% delay rate using 35MT semi-trailers. APR Trailler Service operates 68.5 km routes with 92.3% delay rate using 35MT semi-trailers. Baba Lingaraj Enterprises operates 89.6 km routes with 88.5% delay rate using 27MT flat-beds. As Logistics operates 217 km routes with 83.2% delay rate using 35MT semi-trailers. Sunita Carriers operates 78.7 km routes with 79.7% delay rate using 27MT flat-beds. On these routes, deadlines are achievable (1–1.5 days) and distances are short (70–220 km). The only difference between these suppliers and on-time performers is vehicle size. A 27MT or 35MT vehicle cannot access standard industrial loading bays designed for smaller trucks, adding 2–4 hours of waiting time at origin and destination. Additionally, these heavy vehicles cannot enter city centers during curfew hours (06:00–11:00 and 17:00–22:00), forcing multi-hour delays on journeys that should take 2–3 hours end-to-end.
 
-|<img width="1389" height="690" alt="Vehicle Distance Breakdown" src="../material/vehicle_distance_breakdown.png" />|
+|<img src="material/vehicle_distance_breakdown.png" alt="Vehicle Distance Breakdown" width="100%">|
 |:---------:|
 |**Figure 3:** Fleet allocation by distance category shows that short routes (< 250 km) should use light vehicles but currently show 35–40% deployment of 35MT semi-trailers (mismatched). Very long routes (> 1,500 km) correctly favor heavy vehicles. This allocation mismatch is localized to 6 suppliers and is directly correctable.|
 
@@ -95,7 +95,7 @@ A truck heading 1,500 km to Tamil Nadu and a truck heading 150 km across town ma
 
 - **Main finding 3:** Vehicle-route mismatch is localized and correctable; it is not a network-wide problem. Long cross-state routes correctly use heavy freight vehicles (25–35 MT). Urban routes mostly use appropriately-sized light trucks (3–8 MT). The mismatch is confined to 5 suppliers operating short routes with oversized vehicles. Correcting these 5 supplier-vehicle combinations would recover approximately 200–250 on-time shipments per month, representing a 45% reduction in current monthly late shipments. This is a high-ROI operational fix: it requires supplier communication and potential vehicle reallocation—no capital expenditure on new deadline systems, no customer communication about deadline changes, and no disruption to suppliers operating correct configurations.
 
-|<img width="1033" height="518" alt="Correlation Heatmap" src="../material/correlation_heatmap.png" />|
+|<img src="material/correlation_heatmap.png" alt="Correlation Heatmap" width="100%">|
 |:----------------:|
 |**Figure 4:** Correlation analysis reveals vehicle type shows stronger association with delay rate (0.68 correlation) than distance (0.12) or deadline pressure (0.14) on routes under 250 km. This confirms vehicle allocation—not distance or deadline—is the primary driver of performance variance in the short-route segment.
 
